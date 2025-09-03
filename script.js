@@ -1,6 +1,6 @@
 class UniversityFinder {
     constructor() {
-        this.apiUrl = "http://universities.hipolabs.com/search";
+        this.apiUrl = "https://universities.hipolabs.com/search";
         this.universities = [];
         this.filteredUniversities = [];
         this.currentFilter = 'all';
@@ -70,8 +70,9 @@ class UniversityFinder {
         
         try {
             const universities = await this.fetchUniversities(country);
+            
             if (universities.length === 0) {
-                this.showError(`No universities found for "${country}". Please check the country name and try again.`);
+                this.showError(`No universities found for "${country}". Try popular countries like India, United States, Canada, or United Kingdom.`);
                 this.filtersContainer.style.display = 'none';
                 this.animateSearchButton('error');
                 return;
@@ -83,20 +84,12 @@ class UniversityFinder {
             this.filtersContainer.style.display = 'flex';
             this.animateSearchButton('success');
             
-            // Add success message
-            this.showSuccessMessage(`Found ${universities.length} universities in ${country}!`);
-            
         } catch (error) {
             console.error('Search error:', error);
             this.animateSearchButton('error');
             
-            if (error.response?.status === 404) {
-                this.showError(`No universities found for "${country}". Please check the country name.`);
-            } else if (error.code === 'NETWORK_ERROR' || !navigator.onLine) {
-                this.showError('Please check your internet connection and try again.');
-            } else {
-                this.showError('Unable to fetch universities. The service might be temporarily unavailable. Please try again later.');
-            }
+            // Show user-friendly error message
+            this.showError(`Unable to fetch universities for "${country}". Please try again or check your internet connection.`);
             this.filtersContainer.style.display = 'none';
         } finally {
             this.showLoading(false);
